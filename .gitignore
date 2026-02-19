@@ -1,0 +1,8 @@
+/vendor/
+.env
+config/mail.php
+config/auth.php
+*.log
+template/certificate-template.png
+template/certificate-template.jpg
+template/fonts/

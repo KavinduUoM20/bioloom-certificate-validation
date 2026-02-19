@@ -1,0 +1,8 @@
+<?php
+/**
+ * Log out – Bioloom Certificate System
+ */
+require_once __DIR__ . '/includes/auth.php';
+log_out_user();
+header('Location: login.php');
+exit;

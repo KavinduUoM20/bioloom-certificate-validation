@@ -1,0 +1,3 @@
+# Bioloom Certificate System – Apache
+DirectoryIndex index.php
+Options -Indexes

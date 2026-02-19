@@ -1,0 +1,10 @@
+{
+    "name": "bioloom/cert-verification",
+    "description": "Certificate and badge issuing for Bioloom Islands Pvt Ltd",
+    "require": {
+        "php": ">=7.4",
+        "phpmailer/phpmailer": "^6.8",
+        "tecnickcom/tcpdf": "^6.6"
+    },
+    "autoload": {}
+}
