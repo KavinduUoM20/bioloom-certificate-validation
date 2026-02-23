@@ -101,14 +101,25 @@ if ($completion === 1 && $token !== null) {
             $mail->setFrom($fromEmail, $fromName);
             $mail->addAddress($email, $first_name . ' ' . $last_name);
             $mail->Subject = 'Your certificate – Bioloom Islands Pvt Ltd';
+
+            $footerImgUrl = base_url() . '/template/signature-footer.png';
             $mail->Body = "
-                <p>Hello " . h($first_name) . ",</p>
-                <p>Your certificate is ready. Click the link below to view and download it.</p>
-                <p><a href=\"" . h($cert_url) . "\" style=\"color:#38bdf8;\">View my certificate</a></p>
-                <p>If the link does not work, copy and paste this URL into your browser:</p>
-                <p style=\"word-break:break-all;color:#94a3b8;\">" . h($cert_url) . "</p>
-                <p>This link is unique to you. Do not share it.</p>
-                <p>— Bioloom Islands Pvt Ltd</p>
+                <div style=\"font-family: sans-serif; max-width: 600px; margin: 0 auto;\">
+                    <header style=\"padding: 16px 0; border-bottom: 1px solid #e5e7eb;\">
+                        <strong style=\"font-size: 18px; color: #1a1a1a;\">" . h($fromName) . "</strong>
+                    </header>
+                    <div style=\"padding: 24px 0;\">
+                        <p>Hello " . h($first_name) . ",</p>
+                        <p>Your certificate is ready. Click the link below to view and download it.</p>
+                        <p><a href=\"" . h($cert_url) . "\" style=\"color:#38bdf8;\">View my certificate</a></p>
+                        <p>If the link does not work, copy and paste this URL into your browser:</p>
+                        <p style=\"word-break:break-all;color:#94a3b8;\">" . h($cert_url) . "</p>
+                        <p>This link is unique to you. Do not share it.</p>
+                    </div>
+                    <footer style=\"padding: 24px 0; border-top: 1px solid #e5e7eb;\">
+                        <img src=\"" . h($footerImgUrl) . "\" alt=\"\" style=\"display: block; max-width: 100%; height: auto;\" width=\"400\">
+                    </footer>
+                </div>
             ";
             $mail->AltBody = "Hello {$first_name},\n\nYour certificate: {$cert_url}\n\n— Bioloom Islands Pvt Ltd";
 

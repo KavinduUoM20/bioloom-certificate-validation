@@ -9,8 +9,8 @@ return [
     'orientation'    => 'L',
 
     'name_area' => [
-    'left_mm'   => 27,
-    'top_mm'    => 50,
+    'left_mm'   => 15,
+    'top_mm'    => 55,
     'width_mm'  => 131,
     'height_mm' => 13.8,
     ],

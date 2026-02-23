@@ -84,7 +84,7 @@ class CertificatePdf
         $pdf->SetTextColor(30, 40, 55);
         $pdf->SetAlpha(1);
         $pdf->SetXY($left, $top);
-        $pdf->Cell($width, $height, $recipientName, 0, 0, 'C', false, '', 0, false, 'T', 'M');
+        $pdf->Cell($width, $height, $recipientName, 0, 0, 'L', false, '', 0, false, 'T', 'M');
 
         $pdf->Output($filename, 'I');
     }

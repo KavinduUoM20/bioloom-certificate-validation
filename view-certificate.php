@@ -1,7 +1,7 @@
 <?php
 /**
  * Certificate landing page by token - Bioloom Islands Pvt Ltd
- * Web-rendered certificate content, View PDF button, Add to LinkedIn Profile.
+ * Web-rendered certificate content, Download certificate button, Add to LinkedIn Profile.
  */
 require_once __DIR__ . '/config/db.php';
 require_once __DIR__ . '/includes/functions.php';
@@ -54,6 +54,18 @@ $pageUrl       = base_url() . '/view-certificate.php?token=' . urlencode($token)
 $badgeImageUrl = base_url() . '/assets/badge.png';
 $downloadUrl   = base_url() . '/download-certificate.php?token=' . urlencode($token);
 
+// Template image for web view (same as PDF); name position from config
+$certConfig    = is_file(__DIR__ . '/config/certificate.php') ? require __DIR__ . '/config/certificate.php' : [];
+$templateUrl   = base_url() . '/template/certificate-template.png';
+$pageW         = (float) ($certConfig['page_width_mm'] ?? 210);
+$pageH         = (float) ($certConfig['page_height_mm'] ?? 148);
+$nameArea      = $certConfig['name_area'] ?? ['left_mm' => 27, 'top_mm' => 50, 'width_mm' => 131, 'height_mm' => 14];
+$nameLeftPct   = round(100 * ($nameArea['left_mm'] ?? 27) / $pageW, 2);
+$nameTopPct    = round(100 * ($nameArea['top_mm'] ?? 50) / $pageH, 2);
+$nameWidthPct  = round(100 * ($nameArea['width_mm'] ?? 131) / $pageW, 2);
+$nameHeightPct = round(100 * ($nameArea['height_mm'] ?? 14) / $pageH, 2);
+$nameFontSize  = (int) ($certConfig['name_font_size'] ?? 18);
+
 $linkedInUrl = 'https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME'
     . '&name=' . urlencode($linkedInCertTitle)
     . '&organizationName=' . urlencode($linkedInOrgName)
@@ -77,7 +89,7 @@ $ogDescription = 'Awarded by ' . $orgName . ', ' . $orgPlace;
     <meta property="og:type" content="website">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --ink: #1a1a1a;
@@ -95,7 +107,7 @@ $ogDescription = 'Awarded by ' . $orgName . ', ' . $orgPlace;
             min-height: 100vh;
             background: var(--white);
             color: var(--ink);
-            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 1rem;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
@@ -106,59 +118,39 @@ $ogDescription = 'Awarded by ' . $orgName . ', ' . $orgPlace;
             padding: clamp(1.25rem, 4vw, 2.5rem);
         }
         .certificate {
-            background: var(--white);
-            border: 2px solid var(--border);
-            border-radius: 2px;
-            padding: clamp(2rem, 6vw, 3.5rem);
             margin-bottom: 2rem;
             position: relative;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            max-width: 100%;
+            width: 100%;
+            aspect-ratio: 210 / 148;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            background: var(--bg-paper);
         }
-        .certificate::before {
-            content: '';
-            position: absolute;
-            inset: 12px;
-            border: 1px solid var(--border);
-            border-radius: 1px;
-            pointer-events: none;
-        }
-        .certificate-heading {
-            font-family: 'Cormorant Garamond', Georgia, serif;
-            font-size: clamp(1.5rem, 4vw, 1.875rem);
-            font-weight: 600;
-            text-align: center;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--ink);
-            margin: 0 0 1.75rem;
-            line-height: 1.3;
-        }
-        .certificate-body {
-            font-family: 'Cormorant Garamond', Georgia, serif;
-            font-size: clamp(1.125rem, 2.5vw, 1.35rem);
-            font-weight: 400;
-            text-align: center;
-            color: var(--ink);
-            margin: 0;
-            line-height: 1.7;
-        }
-        .certificate-body .name {
-            font-weight: 600;
-            font-style: italic;
+        .certificate-image {
             display: block;
-            margin: 0.5rem 0 0.75rem;
-            font-size: 1.15em;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
         }
-        .certificate-body .meta {
-            margin-top: 1.5rem;
-            font-size: 0.95em;
-            color: var(--ink-muted);
-        }
-        .certificate-org {
+        .certificate-name-overlay {
+            position: absolute;
+            left: <?= $nameLeftPct ?>%;
+            top: <?= $nameTopPct ?>%;
+            width: <?= $nameWidthPct ?>%;
+            height: <?= $nameHeightPct ?>%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(0.75rem, 2.2vw, <?= max(14, $nameFontSize) ?>px);
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
             color: var(--ink);
+            text-align: left;
+            pointer-events: none;
         }
         .actions {
             text-align: center;
@@ -170,7 +162,7 @@ $ogDescription = 'Awarded by ' . $orgName . ', ' . $orgPlace;
             justify-content: center;
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-size: 0.9375rem;
             font-weight: 500;
             text-decoration: none;
@@ -223,13 +215,8 @@ $ogDescription = 'Awarded by ' . $orgName . ', ' . $orgPlace;
 <body>
     <div class="page">
         <div class="certificate">
-            <h1 class="certificate-heading"><?= h($certTitle) ?></h1>
-            <p class="certificate-body">
-                This certificate is proudly presented to
-                <span class="name"><?= h($recipientName) ?></span>
-                for attending <strong><?= h($eventName) ?></strong> organized by <span class="certificate-org"><?= h($orgName) ?></span>, <?= h($orgPlace) ?> on <?= h($certDateText) ?>.
-            </p>
-            <p class="certificate-body meta"><?= h($orgName) ?> — <?= h($orgPlace) ?></p>
+            <img class="certificate-image" src="<?= h($templateUrl) ?>" alt="Certificate" width="210" height="148">
+            <div class="certificate-name-overlay" aria-hidden="true"><?= h($recipientName) ?></div>
         </div>
 
         <div class="actions">
@@ -237,7 +224,7 @@ $ogDescription = 'Awarded by ' . $orgName . ', ' . $orgPlace;
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                View PDF
+                Download certificate
             </a>
         </div>
 
